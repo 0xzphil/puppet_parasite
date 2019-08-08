@@ -1,0 +1,13 @@
+[Unit]
+Description=AutoCheck
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=yuu
+ExecStart=/usr/local/bin/node /home/yuu/WebstormProjects/yuu_runner/puppet.js
+WorkingDirectory=/home/yuu/WebstormProjects/yuu_runner
+
+[Install]
+WantedBy=multi-user.target
