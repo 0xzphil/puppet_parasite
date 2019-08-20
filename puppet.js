@@ -5,14 +5,14 @@ const username = process.env.YUU_USER;
 const password = process.env.YUU_PASSWORD;
 
 run().then(r => {
-	console.log("Run ok")
+	console.log("First run")
 });
 
 async function run() {
-	try {
-		const browser = await puppeteer.launch();
-		const page = await browser.newPage();
+	const browser = await puppeteer.launch();
+	const page = await browser.newPage();
 
+	async function check(page) {
 		await page.goto('https://auth.garena.com/oauth/login?client_id=200064&response_type=token&redirect_uri=https%3A%2F%2Fthoitrang.bns.garena.vn%2Fconnect%2Fgarena%2Fcallback')
 		await page.type('#sso_login_form_account', username);
 		await page.type('#sso_login_form_password', password);
@@ -35,11 +35,15 @@ async function run() {
 
 		// Click "Confirm" button
 		await page.click('.swal2-confirm');
-		await browser.close();
+	}
 
-		setTimeout(run, 300000)
+	try {
+		await check(page);
 	} catch (e) {
-		console.log(e);
+		console.log("ERROR: " + e.toString());
+	} finally {
+		await page.close();
+		await browser.close();
 		setTimeout(run, 300000)
 	}
 }
