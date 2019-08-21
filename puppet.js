@@ -9,8 +9,8 @@ run().then(r => {
 });
 
 async function run() {
-	const browser = await puppeteer.launch();
-	const page = await browser.newPage();
+	let browser = null;
+	let page = null;
 
 	async function check(page) {
 		await page.goto('https://auth.garena.com/oauth/login?client_id=200064&response_type=token&redirect_uri=https%3A%2F%2Fthoitrang.bns.garena.vn%2Fconnect%2Fgarena%2Fcallback')
@@ -19,29 +19,25 @@ async function run() {
 		await page.click('#confirm-btn');
 
 		await page.waitForNavigation({waitUntil: "networkidle2"});
-		await page.screenshot({path: 'example.png'});
-
 		const textOfFirstDiv = await page.evaluate(
 			() => document.querySelector('div[class=login] a').textContent
 		);
 
 		console.log(textOfFirstDiv);
-
-		// Click "Nhận" button
+		// Click "Get" button
 		await page.click('.middle');
-		const textOfFirstDiv2 = await page.evaluate(
-			() => document.querySelector('.swal2-actions').textContent
-		);
-
 		// Click "Confirm" button
 		await page.click('.swal2-confirm');
 	}
 
 	try {
+		browser = await puppeteer.launch({headless: true, args:['--no-sandbox']});
+		page = await browser.newPage();
 		await check(page);
 	} catch (e) {
 		console.log("ERROR: " + e.toString());
 	} finally {
+		console.log("Final run");
 		await page.close();
 		await browser.close();
 		setTimeout(run, 300000)
